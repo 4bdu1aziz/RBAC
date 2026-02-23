@@ -45,7 +45,10 @@ public class RoleManager implements Repository<Role> {
             return false;
         }
 
-        if (assignmentManager.isRoleAssigned(role.getId())) {
+        // Проверяем, не назначена ли роль пользователям через AssignmentManager
+        boolean isAssignedToUsers = assignmentManager.findByRole(role).size() > 0;
+
+        if (isAssignedToUsers) {
             throw new IllegalStateException("Cannot delete role '" + role.getName() + "' because it is assigned to users");
         }
 
