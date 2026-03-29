@@ -1,5 +1,6 @@
 package src.system;
 
+import src.utils.AuditLog;
 import src.managers.*;
 import models.User;
 import models.Role;
@@ -18,14 +19,19 @@ public class RBACSystem {
     private final RoleManager roleManager;
     private final AssignmentManager assignmentManager;
     private String currentUser;
+    private final AuditLog auditLog;
 
     public RBACSystem() {
         this.userManager = new UserManager();
         this.assignmentManager = new AssignmentManager(userManager, null);
         this.roleManager = new RoleManager(assignmentManager);
+        this.auditLog = new AuditLog();
         this.currentUser = "system";
     }
 
+    public AuditLog getAuditLog() {
+        return auditLog;
+    }
     public UserManager getUserManager() {
         return userManager;
     }
