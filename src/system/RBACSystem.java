@@ -14,6 +14,7 @@ public class RBACSystem {
     private final AssignmentManager assignmentManager;
     private final AuditLog auditLog;
     private final BackgroundExecutor backgroundExecutor;
+    private final ScheduledTasks scheduledTasks;
     private String currentUser;
 
     public RBACSystem() {
@@ -22,6 +23,7 @@ public class RBACSystem {
         this.roleManager = new RoleManager(assignmentManager);
         this.auditLog = new AuditLog();
         this.backgroundExecutor = new BackgroundExecutor();
+        this.scheduledTasks = new ScheduledTasks(this);
         this.currentUser = "system";
     }
 
@@ -43,6 +45,10 @@ public class RBACSystem {
 
     public BackgroundExecutor getBackgroundExecutor() {
         return backgroundExecutor;
+    }
+
+    public ScheduledTasks getScheduledTasks() {
+        return scheduledTasks;
     }
 
     public void setCurrentUser(String username) {
@@ -130,8 +136,8 @@ public class RBACSystem {
 
         // Топ-3 самых популярных ролей
         Map<String, Integer> roleCounts = new HashMap<>();
-        for (RoleAssignment ra : assignmentManager.findAll()) {
-            String roleName = ra.role().getName();
+        for (RoleAssignment assignment : assignmentManager.findAll()) {
+            String roleName = assignment.role().getName();
             roleCounts.put(roleName, roleCounts.getOrDefault(roleName, 0) + 1);
         }
 
@@ -148,6 +154,9 @@ public class RBACSystem {
     public void shutdown() {
         if (backgroundExecutor != null) {
             backgroundExecutor.shutdown();
+        }
+        if (auditLog != null) {
+            auditLog.shutdown();
         }
     }
 }
